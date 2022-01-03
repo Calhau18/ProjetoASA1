@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <string.h>
 using namespace std;
 
 class Node{
@@ -33,14 +34,14 @@ void solve1(vector<int> v){
 		Node * new_node = new Node(v[i]);
 		// Get iterator and position of the pile in which new_node is to be inserted
 		vector<int>::iterator pile = lower_bound(top.begin(), top.end(), new_node->value);
-		int index = pile - top.begin();
+		size_t index = pile - top.begin();
 
 		if(piles.size() == 0){
 			new_node->cum_seq_count = 1;
 		}else if(index == 0){
 			new_node->cum_seq_count = piles[0].size()+1;	
 		}else{
-			if(index != (int)top.size()-1)
+			if(index != top.size())
 				new_node->cum_seq_count = piles[index].back()->cum_seq_count;
 
 			vector<Node*> v = piles[index-1];
@@ -52,7 +53,7 @@ void solve1(vector<int> v){
 		}
 
 		// Insert new_node in the table
-		if(index != (int)top.size()-1){
+		if(index != top.size()){
 			top[index] = new_node->value;
 			piles[index].push_back(new_node);
 		}else{
@@ -69,49 +70,30 @@ bool bigger(Node* a, Node* b){
 }
 
 void solve2(vector<int> v1, vector<int> v2){
-	vector< vector<Node*> > piles;
 	unordered_multimap<int,int> val2;
-	for(int i=0; i<(int)v2.size(); i++){
+	for(size_t i=0; i<v2.size(); i++){
 		val2.emplace(v2[i], i);
 	}
-
-	for(int k=0; k<(int)v1.size(); k++){
-		unordered_multimap<int,int>::iterator it = val2.equal_range(v1[k]).first;
-		unordered_multimap<int,int>::iterator last = val2.equal_range(v1[k]).second;
-		Node* new_node;
-		if(piles.size() == 0 && it != last){
-			new_node = new Node(v1[k], k, it->second);
-			vector<Node*> v(1, new_node);
-			piles.push_back(v);
-			it++;
-		}
-		bool just_inserted = true;
-		for(int i=(int)piles.size()-1; i>=0 && it != last; i--){
-			for(int j=0; j<(int)piles[i].size() && it != last; j++){
-				if(just_inserted){
-					new_node = new Node(v1[k], k, it->second);
-					just_inserted = false;
-				}
-				if(bigger(new_node, piles[i][j])){
-					if(i == (int)piles.size()-1){
-						vector<Node*> v(1, new_node);
-						piles.push_back(v);
-					}else{
-						piles[i+1].push_back(new_node);
-					}
-					it++;
-					j--;
-					just_inserted = true;
-				}
+	int dp[v2.size()];
+	memset(dp, 0, v2.size()*sizeof(int));
+	
+	for(size_t i=0; i<v1.size(); i++){
+		if(val2.find(v1[i]) != val2.end()){
+			int count = 0;
+			for(size_t j=0; j<v2.size(); j++){
+				if(v1[i] ==  v2[j])
+					dp[j] = max(count+1, dp[j]);
+				if(v1[i] > v2[j])
+					count = max(dp[j], count);
 			}
 		}
-		while(it != last){
-			new_node = new Node(v1[k], k, it->second);
-			piles[0].push_back(new_node);
-			it++;
-		}
 	}
-	cout << piles.size() << endl;
+	int answer = 0;
+	for(size_t i=0; i<v2.size(); i++){
+		answer = max(answer, dp[i]);
+	}
+
+	cout << answer << endl;
 }
 
 int main(){
