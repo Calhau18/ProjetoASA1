@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
+#include <unordered_set>
 #include <algorithm>
 #include <string.h>
 using namespace std;
@@ -70,9 +70,9 @@ bool bigger(Node* a, Node* b){
 }
 
 void solve2(vector<int> v1, vector<int> v2){
-	unordered_multimap<int,int> val2;
+	unordered_set<int> val2;
 	for(size_t i=0; i<v2.size(); i++){
-		val2.emplace(v2[i], i);
+		val2.insert(v2[i]);
 	}
 	int dp[v2.size()];
 	memset(dp, 0, v2.size()*sizeof(int));
