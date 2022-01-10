@@ -1,12 +1,9 @@
 CC = g++
 
-all: LIS LICS random_k
+all: Project random_k
 
-LIS: LIS.o
-	g++ -std=c++11 -O3 -Wall -o LIS LIS.cpp -lm
-
-LICS: LICS.o
-	g++ -std=c++11 -O3 -Wall -o LICS LICS.cpp -lm
+Project: Project.o
+	g++ -std=c++11 -O3 -Wall -o Project Project.cpp -lm
 
 random_k: random_k.o
 	g++ -O3 -Wall -o random_k random_k.cpp -lm
