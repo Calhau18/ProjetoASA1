@@ -3,12 +3,7 @@
 #include <unordered_set>
 #include <algorithm>
 #include <string.h>
-#include <chrono>
-#include <iostream>
-#include <fstream>
-using namespace std;	
-using namespace std::chrono;
-
+using namespace std;
 
 class Node{
 	public:
@@ -104,18 +99,12 @@ void solve2(vector<int> v1, vector<int> v2){
 int main(){
 	int prob_num; cin >> prob_num;
 	int k; char c = 0;
-	unsigned long int size;
-
-	// Start timer
-	auto start = high_resolution_clock::now();
-
 	if(prob_num == 1){
 		vector<int> v;
 		while(c != '\n' && c != EOF){
 			scanf("%d%c", &k, &c);
 			v.push_back(k);
 		}
-		size = v.size();
 		solve1(v);
 	}
 
@@ -131,33 +120,11 @@ int main(){
 			v2.push_back(k);
 		}
 
-		if(v1.size() > v2.size()){
+		if(v1.size() > v2.size())
 			solve2(v2, v1);
-			size = v1.size();
-		}
-		else{
-			size = v2.size();
-			solve2(v1, v2);
-		}
+		else solve2(v1, v2);
+
 	}
-
-	// Stop timer
-	auto stop = high_resolution_clock::now();
-	// Get duration of execution of algorithm
-	auto duration = duration_cast<microseconds>(stop - start);
-	
-	// Formatting output to string
-	std::string text = "";
-	text += std::to_string(size);
-	text += ",";
-	text += std::to_string(duration.count());
-	text += "\n";
-
-	// Open and output data to file
-	std::ofstream outfile;
-	outfile.open("data3.csv", std::ios_base::app);
-	outfile << text;
-	outfile.close();
 
 	return 0;
 }
