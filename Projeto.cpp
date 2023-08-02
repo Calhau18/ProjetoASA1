@@ -6,109 +6,109 @@
 using namespace std;
 
 class Node{
-	public:
-		int value;
-		int cum_seq_count;
+    public:
+    int value;
+    int cum_seq_count;
 
-		Node(int val){
-			value = val;
-			cum_seq_count = 0;
-		}
+    Node(int val){
+	value = val;
+	cum_seq_count = 0;
+    }
 };
 
 bool comp(Node* a, Node* b){
-	return a->value < b->value;
+    return a->value < b->value;
 }
 
 void solve1(vector<int> v){
-	vector<int> top;
-	vector< vector<Node*> > piles;
-	for(int i=0; i<(int)v.size(); i++){
-		Node * new_node = new Node(v[i]);
-		// Get iterator and position of the pile in which new_node is to be inserted
-		vector<int>::iterator pile = lower_bound(top.begin(), top.end(), new_node->value);
-		size_t index = pile - top.begin();
+    vector<int> top;
+    vector< vector<Node*> > piles;
+    for(int i=0; i<(int)v.size(); i++){
+	Node * new_node = new Node(v[i]);
+	// Get iterator and position of the pile in which new_node is to be inserted
+	vector<int>::iterator pile = lower_bound(top.begin(), top.end(), new_node->value);
+	size_t index = pile - top.begin();
 
-		if(piles.size() == 0){
-			new_node->cum_seq_count = 1;
-		}else if(index == 0){
-			new_node->cum_seq_count = piles[0].size()+1;	
-		}else{
-			if(index != top.size())
-				new_node->cum_seq_count = piles[index].back()->cum_seq_count;
+	if(piles.size() == 0){
+	    new_node->cum_seq_count = 1;
+	    }else if(index == 0){
+	    new_node->cum_seq_count = piles[0].size()+1;	
+	    }else{
+	    if(index != top.size())
+		new_node->cum_seq_count = piles[index].back()->cum_seq_count;
 
-			vector<Node*> v = piles[index-1];
-			auto it = lower_bound(v.rbegin(), v.rend(), new_node, comp); 
-			if(it != v.rend())
-				new_node->cum_seq_count += v.back()->cum_seq_count - (*it)->cum_seq_count;
-			else
-				new_node->cum_seq_count += v.back()->cum_seq_count;
-		}
-
-		// Insert new_node in the table
-		if(index != top.size()){
-			top[index] = new_node->value;
-			piles[index].push_back(new_node);
-		}else{
-			top.push_back(new_node->value);
-			vector<Node*> v(1, new_node);
-			piles.push_back(v);
-		}
+	    vector<Node*> v = piles[index-1];
+	    auto it = lower_bound(v.rbegin(), v.rend(), new_node, comp); 
+	    if(it != v.rend())
+		new_node->cum_seq_count += v.back()->cum_seq_count - (*it)->cum_seq_count;
+		else
+		new_node->cum_seq_count += v.back()->cum_seq_count;
 	}
-	cout << piles.size() << " " << piles.back().back()->cum_seq_count << endl;
+
+	// Insert new_node in the table
+	if(index != top.size()){
+	    top[index] = new_node->value;
+	    piles[index].push_back(new_node);
+	    }else{
+	    top.push_back(new_node->value);
+	    vector<Node*> v(1, new_node);
+	    piles.push_back(v);
+	}
+    }
+    cout << piles.size() << " " << piles.back().back()->cum_seq_count << endl;
 }
 
 void solve2(vector<int> v1, vector<int> v2){
-	int dp[v2.size()];
-	memset(dp, 0, v2.size()*sizeof(int));
-	
-	for(size_t i=0; i<v1.size(); i++){
-		int count = 0;
-		for(size_t j=0; j<v2.size(); j++){
-			if(v1[i] ==  v2[j])
-				dp[j] = max(count+1, dp[j]);
-			if(v1[i] > v2[j])
-				count = max(dp[j], count);
-		}
-	}
-	int answer = 0;
-	for(size_t i=0; i<v2.size(); i++){
-		answer = max(answer, dp[i]);
-	}
+    int dp[v2.size()];
+    memset(dp, 0, v2.size()*sizeof(int));
 
-	cout << answer << endl;
+    for(size_t i=0; i<v1.size(); i++){
+	int count = 0;
+	for(size_t j=0; j<v2.size(); j++){
+	    if(v1[i] ==  v2[j])
+		dp[j] = max(count+1, dp[j]);
+	    if(v1[i] > v2[j])
+		count = max(dp[j], count);
+	}
+    }
+    int answer = 0;
+    for(size_t i=0; i<v2.size(); i++){
+	answer = max(answer, dp[i]);
+    }
+
+    cout << answer << endl;
 }
 
 int main(){
-	int prob_num; cin >> prob_num;
-	int k; char c = 0;
-	if(prob_num == 1){
-		vector<int> v;
-		while(c != '\n' && c != EOF){
-			scanf("%d%c", &k, &c);
-			v.push_back(k);
-		}
-		solve1(v);
+    int prob_num; cin >> prob_num;
+    int k; char c = 0;
+    if(prob_num == 1){
+	vector<int> v;
+	while(c != '\n' && c != EOF){
+	    scanf("%d%c", &k, &c);
+	    v.push_back(k);
 	}
+	solve1(v);
+    }
 
-	if(prob_num == 2){
-		vector<int> v1, v2;
-		unordered_set<int> val1;
-		while(c != '\n' && c != EOF){
-			scanf("%d%c", &k, &c);
-			v1.push_back(k);
-			val1.insert(k);
-		}
-		c = 0;
-		while(c != '\n' && c != EOF){
-			scanf("%d%c", &k, &c);
-			if(val1.find(k) != val1.end())
-				v2.push_back(k);
-		}
-		solve2(v2, v1);
-
+    if(prob_num == 2){
+	vector<int> v1, v2;
+	unordered_set<int> val1;
+	while(c != '\n' && c != EOF){
+	    scanf("%d%c", &k, &c);
+	    v1.push_back(k);
+	    val1.insert(k);
 	}
+	c = 0;
+	while(c != '\n' && c != EOF){
+	    scanf("%d%c", &k, &c);
+	    if(val1.find(k) != val1.end())
+	    v2.push_back(k);
+	}
+	solve2(v2, v1);
 
-	return 0;
+    }
+
+    return 0;
 }
 
