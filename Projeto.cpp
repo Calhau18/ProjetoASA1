@@ -8,18 +8,11 @@ using namespace std;
 class Node{
 	public:
 		int value;
-		int pos1, pos2;
 		int cum_seq_count;
 
 		Node(int val){
 			value = val;
 			cum_seq_count = 0;
-		}
-
-		Node(int val, int p1, int p2){
-			value = val;
-			pos1 = p1;
-			pos2 = p2;
 		}
 };
 
@@ -65,27 +58,17 @@ void solve1(vector<int> v){
 	cout << piles.size() << " " << piles.back().back()->cum_seq_count << endl;
 }
 
-bool bigger(Node* a, Node* b){
-	return a->value > b->value && a->pos1 > b->pos1 && a->pos2 > b->pos2;
-}
-
 void solve2(vector<int> v1, vector<int> v2){
-	unordered_set<int> val2;
-	for(size_t i=0; i<v2.size(); i++){
-		val2.insert(v2[i]);
-	}
 	int dp[v2.size()];
 	memset(dp, 0, v2.size()*sizeof(int));
 	
 	for(size_t i=0; i<v1.size(); i++){
-		if(val2.find(v1[i]) != val2.end()){
-			int count = 0;
-			for(size_t j=0; j<v2.size(); j++){
-				if(v1[i] ==  v2[j])
-					dp[j] = max(count+1, dp[j]);
-				if(v1[i] > v2[j])
-					count = max(dp[j], count);
-			}
+		int count = 0;
+		for(size_t j=0; j<v2.size(); j++){
+			if(v1[i] ==  v2[j])
+				dp[j] = max(count+1, dp[j]);
+			if(v1[i] > v2[j])
+				count = max(dp[j], count);
 		}
 	}
 	int answer = 0;
@@ -110,19 +93,19 @@ int main(){
 
 	if(prob_num == 2){
 		vector<int> v1, v2;
+		unordered_set<int> val1;
 		while(c != '\n' && c != EOF){
 			scanf("%d%c", &k, &c);
 			v1.push_back(k);
+			val1.insert(k);
 		}
 		c = 0;
 		while(c != '\n' && c != EOF){
 			scanf("%d%c", &k, &c);
-			v2.push_back(k);
+			if(val1.find(k) != val1.end())
+				v2.push_back(k);
 		}
-
-		if(v1.size() > v2.size())
-			solve2(v2, v1);
-		else solve2(v1, v2);
+		solve2(v2, v1);
 
 	}
 
